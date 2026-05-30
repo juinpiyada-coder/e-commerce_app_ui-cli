@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
-import { ShoppingCart, X, Plus, Minus, CreditCard, Receipt, Download, Moon, Sun } from 'lucide-react'
+import { ShoppingCart, X, Plus, Minus, CreditCard, Receipt, Download, Moon, Sun, Menu, ChevronRight } from 'lucide-react'
 import jsPDF from 'jspdf'
 import ProductDetail from './ProductDetail'
 
@@ -62,6 +62,8 @@ function App() {
   const [showReceipt, setShowReceipt] = useState(false)
   const [orderDetails, setOrderDetails] = useState(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isCartOpen, setIsCartOpen] = useState(false)
   const [paymentForm, setPaymentForm] = useState({
     cardNumber: '',
     cardName: '',
@@ -279,8 +281,29 @@ function App() {
             {/* Header */}
             <header className="bg-white dark:bg-gray-800 shadow-md transition-colors duration-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Shop</h1>
                 <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    aria-label="Toggle menu"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </button>
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Shop</h1>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <button
+                    onClick={() => setIsCartOpen(!isCartOpen)}
+                    className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors relative"
+                    aria-label="Toggle cart"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </button>
                   <button
                     onClick={toggleDarkMode}
                     className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -288,14 +311,38 @@ function App() {
                   >
                     {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </button>
-                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                  <span className="hidden lg:inline text-sm text-gray-600 dark:text-gray-300">
                     {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'} in cart
                   </span>
                 </div>
               </div>
+              
+              {/* Mobile Menu */}
+              {isMobileMenuOpen && (
+                <div className="lg:hidden border-t dark:border-gray-700 bg-white dark:bg-gray-800">
+                  <div className="px-4 py-3 space-y-2">
+                    <Link
+                      to="/"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-4 py-2 rounded-lg text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      Home
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        setIsCartOpen(true)
+                      }}
+                      className="w-full text-left px-4 py-2 rounded-lg text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      Cart ({cartItemCount})
+                    </button>
+                  </div>
+                </div>
+              )}
             </header>
 
-            <div className="flex flex-1 max-w-7xl mx-auto w-full">
+            <div className="flex flex-1 max-w-7xl mx-auto w-full relative">
               {/* Product Grid */}
               <main className="flex-1 px-4 sm:px-6 lg:px-8 py-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -333,17 +380,26 @@ function App() {
                 </div>
               </main>
 
-              {/* Cart Sidebar - Always Visible */}
-              <aside className="w-96 bg-white dark:bg-gray-800 shadow-lg border-l dark:border-gray-700">
+              {/* Cart Sidebar - Responsive */}
+              <aside className={`fixed lg:static inset-y-0 right-0 w-96 bg-white dark:bg-gray-800 shadow-lg border-l dark:border-gray-700 transform transition-transform duration-300 ease-in-out z-40 ${isCartOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
                 <div className="h-full flex flex-col">
                   <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                       <ShoppingCart className="w-5 h-5" />
                       Shopping Cart
                     </h2>
-                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-3 py-1 rounded-full">
-                      {cartItemCount} items
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-3 py-1 rounded-full">
+                        {cartItemCount} items
+                      </span>
+                      <button
+                        onClick={() => setIsCartOpen(false)}
+                        className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        aria-label="Close cart"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex-1 overflow-y-auto p-4">
@@ -410,6 +466,15 @@ function App() {
                   )}
                 </div>
               </aside>
+              
+              {/* Mobile Cart Backdrop */}
+              {isCartOpen && (
+                <div
+                  onClick={() => setIsCartOpen(false)}
+                  className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+                  aria-hidden="true"
+                />
+              )}
             </div>
 
             {/* Payment Form Modal */}

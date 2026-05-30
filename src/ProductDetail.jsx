@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ShoppingCart, Plus, Minus, ZoomIn, ZoomOut, ArrowLeft, CreditCard } from 'lucide-react'
+import { ShoppingCart, Plus, Minus, ZoomIn, ZoomOut, ArrowLeft, CreditCard, Menu, X, Moon, Sun } from 'lucide-react'
 
 const products = [
   {
@@ -122,6 +122,8 @@ function ProductDetail({ cart, setCart, isDarkMode, toggleDarkMode }) {
   const navigate = useNavigate()
   const [zoom, setZoom] = useState(1)
   const [quantity, setQuantity] = useState(1)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isCartOpen, setIsCartOpen] = useState(false)
   
   const product = products.find(p => p.id === parseInt(id))
 
@@ -175,29 +177,111 @@ function ProductDetail({ cart, setCart, isDarkMode, toggleDarkMode }) {
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-md transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => navigate('/')}
               className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-bold text-gray-800 dark:text-white">Product Details</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">Product Details</h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <button
+              onClick={() => setIsCartOpen(!isCartOpen)}
+              className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors relative"
+              aria-label="Toggle cart"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
             <button
               onClick={toggleDarkMode}
               className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               aria-label="Toggle dark mode"
             >
-              {isDarkMode ? <span className="text-xl">☀️</span> : <span className="text-xl">🌙</span>}
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            <span className="text-sm text-gray-600 dark:text-gray-300">
+            <span className="hidden lg:inline text-sm text-gray-600 dark:text-gray-300">
               {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'} in cart
             </span>
           </div>
         </div>
       </header>
+
+      {/* Mobile Cart Drawer */}
+      {isCartOpen && (
+        <>
+          <div
+            onClick={() => setIsCartOpen(false)}
+            className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+            aria-hidden="true"
+          />
+          <aside className="fixed inset-y-0 right-0 w-96 bg-white dark:bg-gray-800 shadow-lg border-l dark:border-gray-700 transform transition-transform duration-300 ease-in-out z-40 lg:hidden">
+            <div className="h-full flex flex-col">
+              <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                  <ShoppingCart className="w-5 h-5" />
+                  Shopping Cart
+                </h2>
+                <button
+                  onClick={() => setIsCartOpen(false)}
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  aria-label="Close cart"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4">
+                {cart.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                    <ShoppingCart className="w-16 h-16 mb-4 text-gray-300 dark:text-gray-600" />
+                    <p className="text-center">Your cart is empty</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {cart.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-14 h-14 object-cover rounded"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-800 dark:text-white text-sm truncate">{item.name}</h3>
+                          <p className="text-gray-600 dark:text-gray-300 text-sm">${item.price.toFixed(2)}</p>
+                        </div>
+                        <span className="text-sm font-medium text-gray-800 dark:text-white">x{item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {cart.length > 0 && (
+                <div className="p-4 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-lg font-semibold text-gray-800 dark:text-white">Total:</span>
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">${cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsCartOpen(false)
+                      navigate('/')
+                    }}
+                    className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    View Cart
+                  </button>
+                </div>
+              )}
+            </div>
+          </aside>
+        </>
+      )}
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
