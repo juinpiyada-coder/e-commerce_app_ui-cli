@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { ShoppingCart, X, Plus, Minus, CreditCard, Receipt, Download, Moon, Sun } from 'lucide-react'
 import jsPDF from 'jspdf'
+import ProductDetail from './ProductDetail'
 
 const products = [
   {
@@ -270,329 +272,351 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col transition-colors duration-200">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-md transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Shop</h1>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'} in cart
-            </span>
-          </div>
-        </div>
-      </header>
-
-      <div className="flex flex-1 max-w-7xl mx-auto w-full">
-        {/* Product Grid */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <div key={product.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">{product.name}</h3>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xl font-bold text-gray-900 dark:text-white">${product.price.toFixed(2)}</span>
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                    >
-                      Buy Now
-                    </button>
-                  </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={
+          <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col transition-colors duration-200">
+            {/* Header */}
+            <header className="bg-white dark:bg-gray-800 shadow-md transition-colors duration-200">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Shop</h1>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={toggleDarkMode}
+                    className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    aria-label="Toggle dark mode"
+                  >
+                    {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                  </button>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'} in cart
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        </main>
+            </header>
 
-        {/* Cart Sidebar - Always Visible */}
-        <aside className="w-96 bg-white dark:bg-gray-800 shadow-lg border-l dark:border-gray-700">
-          <div className="h-full flex flex-col">
-            <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <ShoppingCart className="w-5 h-5" />
-                Shopping Cart
-              </h2>
-              <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-3 py-1 rounded-full">
-                {cartItemCount} items
-              </span>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4">
-              {cart.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
-                  <ShoppingCart className="w-16 h-16 mb-4 text-gray-300 dark:text-gray-600" />
-                  <p className="text-center">Your cart is empty</p>
-                  <p className="text-sm text-center mt-2">Add items to get started</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {cart.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-14 h-14 object-cover rounded"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-800 dark:text-white text-sm truncate">{item.name}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">${item.price.toFixed(2)}</p>
+            <div className="flex flex-1 max-w-7xl mx-auto w-full">
+              {/* Product Grid */}
+              <main className="flex-1 px-4 sm:px-6 lg:px-8 py-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {products.map((product) => (
+                    <div key={product.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                      <div className="relative">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-48 object-cover"
+                        />
                       </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
-                        >
-                          <Minus className="w-3 h-3" />
-                        </button>
-                        <span className="w-6 text-center font-medium text-sm dark:text-white">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">{product.name}</h3>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">${product.price.toFixed(2)}</span>
+                          <div className="flex gap-2">
+                            <Link
+                              to={`/product/${product.id}`}
+                              className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-sm"
+                            >
+                              View Details
+                            </Link>
+                            <button
+                              onClick={() => addToCart(product)}
+                              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                            >
+                              Buy Now
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
                     </div>
                   ))}
                 </div>
-              )}
+              </main>
+
+              {/* Cart Sidebar - Always Visible */}
+              <aside className="w-96 bg-white dark:bg-gray-800 shadow-lg border-l dark:border-gray-700">
+                <div className="h-full flex flex-col">
+                  <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                      <ShoppingCart className="w-5 h-5" />
+                      Shopping Cart
+                    </h2>
+                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-3 py-1 rounded-full">
+                      {cartItemCount} items
+                    </span>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto p-4">
+                    {cart.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                        <ShoppingCart className="w-16 h-16 mb-4 text-gray-300 dark:text-gray-600" />
+                        <p className="text-center">Your cart is empty</p>
+                        <p className="text-sm text-center mt-2">Add items to get started</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {cart.map((item) => (
+                          <div key={item.id} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-14 h-14 object-cover rounded"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-gray-800 dark:text-white text-sm truncate">{item.name}</h3>
+                              <p className="text-gray-600 dark:text-gray-300 text-sm">${item.price.toFixed(2)}</p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+                              >
+                                <Minus className="w-3 h-3" />
+                              </button>
+                              <span className="w-6 text-center font-medium text-sm dark:text-white">{item.quantity}</span>
+                              <button
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </button>
+                            </div>
+                            <button
+                              onClick={() => removeFromCart(item.id)}
+                              className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {cart.length > 0 && (
+                    <div className="p-4 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="text-lg font-semibold text-gray-800 dark:text-white">Total:</span>
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">${cartTotal.toFixed(2)}</span>
+                      </div>
+                      <button
+                        onClick={handleProceedToPayment}
+                        className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center gap-2"
+                      >
+                        <CreditCard className="w-5 h-5" />
+                        Proceed to Payment
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </aside>
             </div>
 
-            {cart.length > 0 && (
-              <div className="p-4 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-semibold text-gray-800 dark:text-white">Total:</span>
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">${cartTotal.toFixed(2)}</span>
+            {/* Payment Form Modal */}
+            {showPaymentForm && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                  <div className="p-6 border-b dark:border-gray-700 flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-white">Payment Details</h2>
+                    <button
+                      onClick={() => setShowPaymentForm(false)}
+                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                    >
+                      <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handlePaymentSubmit} className="p-6 space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Card Number</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="1234 5678 9012 3456"
+                        value={paymentForm.cardNumber}
+                        onChange={(e) => setPaymentForm({...paymentForm, cardNumber: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                        maxLength="19"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cardholder Name</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="John Doe"
+                        value={paymentForm.cardName}
+                        onChange={(e) => setPaymentForm({...paymentForm, cardName: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expiry Date</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="MM/YY"
+                          value={paymentForm.expiryDate}
+                          onChange={(e) => setPaymentForm({...paymentForm, expiryDate: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                          maxLength="5"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">CVV</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="123"
+                          value={paymentForm.cvv}
+                          onChange={(e) => setPaymentForm({...paymentForm, cvv: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                          maxLength="3"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="john@example.com"
+                        value={paymentForm.email}
+                        onChange={(e) => setPaymentForm({...paymentForm, email: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Delivery Address</label>
+                      <textarea
+                        required
+                        placeholder="Enter your delivery address"
+                        value={paymentForm.address}
+                        onChange={(e) => setPaymentForm({...paymentForm, address: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                        rows="3"
+                      />
+                    </div>
+
+                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-semibold text-gray-800 dark:text-white">Total Amount:</span>
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">${cartTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isProcessing}
+                      className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                      <CreditCard className="w-5 h-5" />
+                      {isProcessing ? 'Processing Payment...' : `Pay $${cartTotal.toFixed(2)}`}
+                    </button>
+                  </form>
                 </div>
-                <button
-                  onClick={handleProceedToPayment}
-                  className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center gap-2"
-                >
-                  <CreditCard className="w-5 h-5" />
-                  Proceed to Payment
-                </button>
+              </div>
+            )}
+
+            {/* Receipt Modal */}
+            {showReceipt && orderDetails && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                  <div className="p-6 border-b dark:border-gray-700 flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                      <Receipt className="w-6 h-6" />
+                      Payment Receipt
+                    </h2>
+                    <button
+                      onClick={handleNewOrder}
+                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                    >
+                      <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                    </button>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+                      <p className="text-green-800 dark:text-green-300 font-semibold text-center">Payment Successful!</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="border-b dark:border-gray-700 pb-4">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Order ID</p>
+                        <p className="font-semibold text-gray-800 dark:text-white">{orderDetails.orderId}</p>
+                      </div>
+
+                      <div className="border-b dark:border-gray-700 pb-4">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Payment ID</p>
+                        <p className="font-semibold text-gray-800 dark:text-white">{orderDetails.paymentId}</p>
+                      </div>
+
+                      <div className="border-b dark:border-gray-700 pb-4">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Date</p>
+                        <p className="font-semibold text-gray-800 dark:text-white">{orderDetails.date}</p>
+                      </div>
+
+                      <div className="border-b dark:border-gray-700 pb-4">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Customer Details</p>
+                        <p className="font-semibold text-gray-800 dark:text-white">{orderDetails.customer.cardName}</p>
+                        <p className="text-gray-600 dark:text-gray-300">{orderDetails.customer.email}</p>
+                        <p className="text-gray-600 dark:text-gray-300">{orderDetails.customer.address}</p>
+                      </div>
+
+                      <div className="border-b dark:border-gray-700 pb-4">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Items Purchased</p>
+                        {orderDetails.items.map((item, index) => (
+                          <div key={index} className="flex justify-between text-gray-800 dark:text-white">
+                            <span>{item.name} x{item.quantity}</span>
+                            <span>${(item.price * item.quantity).toFixed(2)}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-semibold text-gray-800 dark:text-white">Total Paid</span>
+                          <span className="text-2xl font-bold text-green-600 dark:text-green-400">${orderDetails.total.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 space-y-3">
+                      <button
+                        onClick={handleDownloadReceipt}
+                        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2"
+                      >
+                        <Download className="w-5 h-5" />
+                        Download Receipt
+                      </button>
+                      <button
+                        onClick={handleNewOrder}
+                        className="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+                      >
+                        Continue Shopping
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
-        </aside>
-      </div>
-
-      {/* Payment Form Modal */}
-      {showPaymentForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b dark:border-gray-700 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Payment Details</h2>
-              <button
-                onClick={() => setShowPaymentForm(false)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-              </button>
-            </div>
-
-            <form onSubmit={handlePaymentSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Card Number</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="1234 5678 9012 3456"
-                  value={paymentForm.cardNumber}
-                  onChange={(e) => setPaymentForm({...paymentForm, cardNumber: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                  maxLength="19"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cardholder Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="John Doe"
-                  value={paymentForm.cardName}
-                  onChange={(e) => setPaymentForm({...paymentForm, cardName: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expiry Date</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="MM/YY"
-                    value={paymentForm.expiryDate}
-                    onChange={(e) => setPaymentForm({...paymentForm, expiryDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                    maxLength="5"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">CVV</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="123"
-                    value={paymentForm.cvv}
-                    onChange={(e) => setPaymentForm({...paymentForm, cvv: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                    maxLength="3"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                <input
-                  type="email"
-                  required
-                  placeholder="john@example.com"
-                  value={paymentForm.email}
-                  onChange={(e) => setPaymentForm({...paymentForm, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Delivery Address</label>
-                <textarea
-                  required
-                  placeholder="Enter your delivery address"
-                  value={paymentForm.address}
-                  onChange={(e) => setPaymentForm({...paymentForm, address: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                  rows="3"
-                />
-              </div>
-
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-gray-800 dark:text-white">Total Amount:</span>
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">${cartTotal.toFixed(2)}</span>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isProcessing}
-                className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                <CreditCard className="w-5 h-5" />
-                {isProcessing ? 'Processing Payment...' : `Pay $${cartTotal.toFixed(2)}`}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Receipt Modal */}
-      {showReceipt && orderDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b dark:border-gray-700 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <Receipt className="w-6 h-6" />
-                Payment Receipt
-              </h2>
-              <button
-                onClick={handleNewOrder}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-              </button>
-            </div>
-
-            <div className="p-6">
-              <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
-                <p className="text-green-800 dark:text-green-300 font-semibold text-center">Payment Successful!</p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="border-b dark:border-gray-700 pb-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Order ID</p>
-                  <p className="font-semibold text-gray-800 dark:text-white">{orderDetails.orderId}</p>
-                </div>
-
-                <div className="border-b dark:border-gray-700 pb-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Payment ID</p>
-                  <p className="font-semibold text-gray-800 dark:text-white">{orderDetails.paymentId}</p>
-                </div>
-
-                <div className="border-b dark:border-gray-700 pb-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Date</p>
-                  <p className="font-semibold text-gray-800 dark:text-white">{orderDetails.date}</p>
-                </div>
-
-                <div className="border-b dark:border-gray-700 pb-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Customer Details</p>
-                  <p className="font-semibold text-gray-800 dark:text-white">{orderDetails.customer.cardName}</p>
-                  <p className="text-gray-600 dark:text-gray-300">{orderDetails.customer.email}</p>
-                  <p className="text-gray-600 dark:text-gray-300">{orderDetails.customer.address}</p>
-                </div>
-
-                <div className="border-b dark:border-gray-700 pb-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Items Purchased</p>
-                  {orderDetails.items.map((item, index) => (
-                    <div key={index} className="flex justify-between text-gray-800 dark:text-white">
-                      <span>{item.name} x{item.quantity}</span>
-                      <span>${(item.price * item.quantity).toFixed(2)}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold text-gray-800 dark:text-white">Total Paid</span>
-                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">${orderDetails.total.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                <button
-                  onClick={handleDownloadReceipt}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2"
-                >
-                  <Download className="w-5 h-5" />
-                  Download Receipt
-                </button>
-                <button
-                  onClick={handleNewOrder}
-                  className="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
-                >
-                  Continue Shopping
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+        } />
+        <Route path="/product/:id" element={
+          <ProductDetail 
+            cart={cart} 
+            setCart={setCart} 
+            isDarkMode={isDarkMode} 
+            toggleDarkMode={toggleDarkMode} 
+          />
+        } />
+      </Routes>
+    </Router>
   )
 }
 
